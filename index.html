@@ -22,22 +22,25 @@
     <h1></h1>
     <p></p>
     <p class="loading">Loading...</p>
+    <img src="" alt="" />
     <script>
       const searchInput = document.getElementById('searchLocation')
       const temperatureText = document.querySelector('p')
       const loadingText = document.querySelector('.loading')
       const cityHeader = document.querySelector('h1')
+      const img = document.querySelector('img')
 
       async function fetchTemperature(city) {
         try {
           loadingText.style.display = 'block'
-          const response = await fetch(
+          const weatherResponse = await fetch(
             `https://api.weatherapi.com/v1/current.json?key=3f628ec8ba1447d9878155933242503&q=${city}`,
             { mode: 'cors' }
           )
-          const data = await response.json()
+          const data = await weatherResponse.json()
           const tempFahrenheit = data.current.temp_f
           const tempCelcius = data.current.temp_c
+          const currentCondition = data.current.condition.text
           cityHeader.textContent = city
 
           temperatureText.textContent = `Temperature in Fahrenheit: ${tempFahrenheit}°F`
@@ -58,6 +61,13 @@
 
           temperatureText.appendChild(celciusBtn)
           loadingText.style.display = 'none'
+
+          const gifResponse = await fetch(
+            `https://api.giphy.com/v1/gifs/translate?api_key=eGVGRvYmfQhYi1sveGpI4oWN8jaXwl60&s=${currentCondition}`,
+            { mode: 'cors' }
+          )
+          const image = await gifResponse.json()
+          img.src = image.data.images.original.url
         } catch (error) {
           console.error('Error fetching temperature:', error)
           loadingText.style.display = 'none'
