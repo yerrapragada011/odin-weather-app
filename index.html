@@ -9,17 +9,28 @@
         align-items: center;
         gap: 50px;
       }
+      .loading {
+        display: none;
+        text-align: center;
+        margin-top: 20px;
+      }
     </style>
     <title>Weather App</title>
   </head>
   <body>
     <input type="text" id="searchLocation" placeholder="Enter city" />
+    <h1></h1>
     <p></p>
+    <p class="loading">Loading...</p>
     <script>
       const searchInput = document.getElementById('searchLocation')
       const temperatureText = document.querySelector('p')
+      const loadingText = document.querySelector('.loading')
+      const cityHeader = document.querySelector('h1')
+
       async function fetchTemperature(city) {
         try {
+          loadingText.style.display = 'block'
           const response = await fetch(
             `https://api.weatherapi.com/v1/current.json?key=3f628ec8ba1447d9878155933242503&q=${city}`,
             { mode: 'cors' }
@@ -27,7 +38,8 @@
           const data = await response.json()
           const tempFahrenheit = data.current.temp_f
           const tempCelcius = data.current.temp_c
-          
+          cityHeader.textContent = city
+
           temperatureText.textContent = `Temperature in Fahrenheit: ${tempFahrenheit}°F`
           const celciusBtn = document.createElement('button')
           celciusBtn.textContent = 'Celcius °C'
@@ -45,8 +57,10 @@
           })
 
           temperatureText.appendChild(celciusBtn)
+          loadingText.style.display = 'none'
         } catch (error) {
           console.error('Error fetching temperature:', error)
+          loadingText.style.display = 'none'
         }
       }
 
@@ -62,6 +76,7 @@
       searchInput.addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
           handleCitySearch()
+          e.target.value = ''
         }
       })
     </script>
